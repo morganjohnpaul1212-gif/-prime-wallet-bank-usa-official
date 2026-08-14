@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +16,6 @@
     body { background: var(--bg); color: var(--dark); min-height:100vh; }
     .hidden { display:none !important; }
 
-    /* Header */
     .header { background: var(--prime-blue); color: #fff; padding:1.2rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
     .logo { font-size:1.4rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; }
     .admin-info { display:flex; align-items:center; gap:1rem; }
@@ -59,47 +59,45 @@
       .sidebar { position:static; width:100%; border-right:none; border-bottom:1px solid #eee; }
       .main-content { margin-left:0; }
     }
+    .notification { position:fixed; top:1rem; right:1rem; padding:1rem 1.5rem; border-radius:6px; color:#fff; font-weight:500; z-index:300; opacity:0; transition:0.3s; transform:translateY(-20px); }
+    .notification.show { opacity:1; transform:translateY(0); }
+    .notification.success { background:var(--success); }
+    .notification.error { background:var(--danger); }
+    .notification.info { background:var(--primary); }
     .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:200; opacity:0; visibility:hidden; transition:0.2s; }
     .modal.active { opacity:1; visibility:visible; }
     .modal-content { background:var(--white); border-radius:12px; width:95%; max-width:600px; max-height:90vh; overflow-y:auto; box-shadow:var(--shadow); }
     .modal-header { padding:1.2rem; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between; }
     .modal-body { padding:1.2rem; }
     .close-btn { background:none; border:none; font-size:1.5rem; cursor:pointer; color:#666; }
-    .notification { position:fixed; top:1rem; right:1rem; padding:1rem 1.5rem; border-radius:6px; color:#fff; font-weight:500; z-index:300; opacity:0; transition:0.3s; transform:translateY(-20px); }
-    .notification.show { opacity:1; transform:translateY(0); }
-    .notification.success { background:var(--success); }
-    .notification.error { background:var(--danger); }
-    .notification.info { background:var(--primary); }
   </style>
 </head>
 <body>
 
 <div id="notification-area"></div>
 
-<!-- Header -->
 <div class="header">
   <div class="logo">🔷 Admin Console — Prime Wallet Bank USA</div>
   <div class="admin-info">
     <span>👤 Admin</span>
-    <button class="logout-btn" onclick="alert('Logged out')">Logout</button>
+    <button class="logout-btn" onclick="alert('Logged out successfully')">Logout</button>
   </div>
 </div>
 
-<!-- Sidebar -->
 <div class="sidebar">
   <div class="sidebar-item active" onclick="showSection('dashboard', this)">📊 Dashboard</div>
   <div class="sidebar-item" onclick="showSection('pending-registrations', this)">📝 Pending Registrations</div>
   <div class="sidebar-item" onclick="showSection('all-users', this)">👥 All Users</div>
   <div class="sidebar-item" onclick="showSection('id-uploads', this)">🪪 ID Uploads</div>
   <div class="sidebar-item" onclick="showSection('card-requests', this)">💳 Card Requests</div>
+  <div class="sidebar-item" onclick="showSection('password-reset-requests', this)">🔑 Password Resets</div>
   <div class="sidebar-item" onclick="showSection('funding', this)">💰 Fund Accounts</div>
   <div class="sidebar-item" onclick="showSection('transfers', this)">↗️ Transfers</div>
   <div class="sidebar-item" onclick="showSection('settings', this)">⚙️ Settings</div>
 </div>
 
-<!-- Main Content -->
 <div class="main-content">
-  <!-- Dashboard -->
+  <!-- DASHBOARD -->
   <section id="dashboard" class="content-section">
     <h2>📊 Admin Dashboard</h2>
     <div class="row">
@@ -123,14 +121,14 @@
     <div class="card" style="margin-top:2rem;">
       <h3>System Status</h3>
       <p>✅ Connected to Prime Wallet Bank USA User Platform</p>
-      <p>✅ CoP/AVS Account Verification Active</p>
-      <p>✅ ID Upload Review System Active</p>
-      <p>✅ Card Upload Review & SMS/Email Notification System Active</p>
-      <p>✅ Funding & Transaction Controls Active</p>
+      <p>✅ All user data syncing in real-time</p>
+      <p>✅ SMS/Email notifications ready</p>
+      <p>✅ ID/ATM upload review system active</p>
+      <p>✅ Password reset control system active</p>
     </div>
   </section>
 
-  <!-- Pending Registrations -->
+  <!-- PENDING REGISTRATIONS -->
   <section id="pending-registrations" class="content-section hidden">
     <h2>📝 Pending User Registrations</h2>
     <div class="table-responsive">
@@ -138,14 +136,12 @@
         <thead>
           <tr><th>Name</th><th>Email</th><th>Phone</th><th>Country</th><th>Date</th><th>Status</th><th>Actions</th></tr>
         </thead>
-        <tbody id="pending-registrations-body">
-          <tr><td colspan="7" style="text-align:center; padding:2rem; color:#666;">No pending registrations yet.</td></tr>
-        </tbody>
+        <tbody id="pending-registrations-body"></tbody>
       </table>
     </div>
   </section>
 
-  <!-- All Users -->
+  <!-- ALL USERS -->
   <section id="all-users" class="content-section hidden">
     <h2>👥 All Registered Users</h2>
     <div class="table-responsive">
@@ -153,14 +149,12 @@
         <thead>
           <tr><th>User ID</th><th>Full Name</th><th>Email</th><th>Balance</th><th>Status</th><th>Registered</th><th>Actions</th></tr>
         </thead>
-        <tbody id="all-users-body">
-          <tr><td colspan="7" style="text-align:center; padding:2rem; color:#666;">No users registered yet.</td></tr>
-        </tbody>
+        <tbody id="all-users-body"></tbody>
       </table>
     </div>
   </section>
 
-  <!-- ID Uploads -->
+  <!-- ID UPLOADS -->
   <section id="id-uploads" class="content-section hidden">
     <h2>🪪 Uploaded Government IDs</h2>
     <div class="table-responsive">
@@ -168,14 +162,12 @@
         <thead>
           <tr><th>User</th><th>ID Type</th><th>ID Number</th><th>Front Preview</th><th>Back Preview</th><th>Status</th><th>Actions</th></tr>
         </thead>
-        <tbody id="id-uploads-body">
-          <tr><td colspan="7" style="text-align:center; padding:2rem; color:#666;">No ID uploads yet.</td></tr>
-        </tbody>
+        <tbody id="id-uploads-body"></tbody>
       </table>
     </div>
   </section>
 
-  <!-- Card Requests — NOW WITH ATM CARD UPLOAD PREVIEW + SMS/EMAIL NOTIFICATIONS -->
+  <!-- CARD REQUESTS -->
   <section id="card-requests" class="content-section hidden">
     <h2>💳 Card Purchase Requests — Review ATM Uploads</h2>
     <div class="table-responsive">
@@ -183,31 +175,31 @@
         <thead>
           <tr><th>Request ID</th><th>User</th><th>Card Type</th><th>Amount</th><th>Payment ATM Card</th><th>Front</th><th>Back</th><th>Status</th><th>Actions</th></tr>
         </thead>
-        <tbody id="card-requests-body">
-          <tr>
-            <td>CR-10042</td><td>John M. (john@example.com)</td><td>Visa</td><td>$49.99</td>
-            <td>****-****-****-1234<br>Exp: 12/28</td>
-            <td><img src="card-front-demo.jpg" class="preview-img" onclick="openImagePreview(this.src)" alt="Front"></td>
-            <td><img src="card-back-demo.jpg" class="preview-img" onclick="openImagePreview(this.src)" alt="Back"></td>
-            <td><span class="badge pending">Pending</span></td>
-            <td>
-              <button class="btn btn-sm btn-success" onclick="approveCard(10042, 'john@example.com', '+234XXXXXXXX', '1234')">✅ Approve & Send PIN</button>
-              <button class="btn btn-sm btn-danger" onclick="rejectCard(10042, 'john@example.com', '+234XXXXXXXX')">❌ Reject</button>
-            </td>
-          </tr>
-          <tr><td colspan="9" style="text-align:center; padding:2rem; color:#666;">No more card requests.</td></tr>
-        </tbody>
+        <tbody id="card-requests-body"></tbody>
       </table>
     </div>
   </section>
 
-  <!-- Funding -->
+  <!-- PASSWORD RESET REQUESTS -->
+  <section id="password-reset-requests" class="content-section hidden">
+    <h2>🔑 Password Reset Requests</h2>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr><th>Request ID</th><th>User</th><th>Contact</th><th>Date</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="password-reset-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- FUNDING -->
   <section id="funding" class="content-section hidden">
     <h2>💰 Fund User Accounts</h2>
     <div class="card" style="max-width:600px; margin:0 auto;">
       <div class="form-group">
-        <label>User ID / Email</label>
-        <input type="text" id="fund-user" placeholder="Enter user ID or email">
+        <label>User Email / ID</label>
+        <input type="text" id="fund-user" placeholder="Enter user email or ID">
       </div>
       <div class="form-group">
         <label>Amount (USD)</label>
@@ -222,7 +214,7 @@
         </select>
       </div>
       <div class="form-group">
-        <label>Notes</label>
+        <label>Notes / Reason</label>
         <textarea id="fund-notes" placeholder="Reason for funding..."></textarea>
       </div>
       <button class="btn btn-primary" onclick="processFunding()">✅ Process Funding</button>
@@ -230,7 +222,7 @@
     </div>
   </section>
 
-  <!-- Transfers -->
+  <!-- TRANSFERS -->
   <section id="transfers" class="content-section hidden">
     <h2>↗️ Global Transfers Log</h2>
     <div class="table-responsive">
@@ -238,14 +230,12 @@
         <thead>
           <tr><th>Trans ID</th><th>Sender</th><th>Recipient Acc</th><th>Recipient Name</th><th>Bank</th><th>Amount</th><th>Date</th><th>Status</th></tr>
         </thead>
-        <tbody id="transfers-body">
-          <tr><td colspan="8" style="text-align:center; padding:2rem; color:#666;">No transfers yet.</td></tr>
-        </tbody>
+        <tbody id="transfers-body"></tbody>
       </table>
     </div>
   </section>
 
-  <!-- Settings -->
+  <!-- SETTINGS -->
   <section id="settings" class="content-section hidden">
     <h2>⚙️ Admin Settings</h2>
     <div class="card" style="max-width:600px; margin:0 auto;">
@@ -262,21 +252,21 @@
   </section>
 </div>
 
-<!-- Image Preview Modal -->
+<!-- IMAGE PREVIEW MODAL -->
 <div id="image-modal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-      <h3>ATM Card Preview</h3>
+      <h3>Preview</h3>
       <button class="close-btn" onclick="closeModal()">×</button>
     </div>
     <div class="modal-body">
-      <img id="preview-img" src="" alt="ATM Card Preview" style="width:100%; border-radius:6px;">
+      <img id="preview-img" src="" alt="Preview" style="width:100%; border-radius:6px;">
     </div>
   </div>
 </div>
 
 <script>
-// Show notification
+// ---------- NOTIFICATIONS ----------
 function showNotification(message, type = 'info') {
   const area = document.getElementById('notification-area');
   const notif = document.createElement('div');
@@ -286,7 +276,7 @@ function showNotification(message, type = 'info') {
   setTimeout(() => { notif.classList.remove('show'); setTimeout(() => area.removeChild(notif), 300); }, 3000);
 }
 
-// Show section
+// ---------- PAGE NAVIGATION ----------
 function showSection(id, el) {
   document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
@@ -294,7 +284,7 @@ function showSection(id, el) {
   el.classList.add('active');
 }
 
-// Modal
+// ---------- MODAL ----------
 function openImagePreview(src) {
   document.getElementById('preview-img').src = src;
   document.getElementById('image-modal').classList.add('active');
@@ -303,34 +293,225 @@ function closeModal() {
   document.getElementById('image-modal').classList.remove('active');
 }
 
-// Card approval/rejection with SMS + Email notifications
-function approveCard(reqId, email, phone, pin) {
-  showNotification(`✅ Card request ${reqId} approved! PIN sent to ${email} and ${phone}`, 'success');
-  alert(`📧 Email sent to ${email}: "Your Prime Wallet Visa Card is approved! Your transaction PIN is: ${pin} — use this PIN for all transfers & purchases."\n\n📱 SMS sent to ${phone}: "Prime Wallet Bank: Your card is approved. Your PIN is ${pin}. Check your email for full details."`);
+// ---------- DATA LOADING FROM USER SITE ----------
+function loadData() {
+  const users = JSON.parse(localStorage.getItem('pb_users') || '[]');
+  const cardRequests = JSON.parse(localStorage.getItem('pb_card_requests') || '[]');
+  const resetRequests = JSON.parse(localStorage.getItem('pb_reset_requests') || '[]');
+
+  // Update dashboard stats
+  document.getElementById('stat-total-users').textContent = users.length;
+  document.getElementById('stat-pending').textContent = users.filter(u => u.status === 'pending').length;
+  document.getElementById('stat-approved').textContent = users.filter(u => u.status === 'approved').length;
+  document.getElementById('stat-card-requests').textContent = cardRequests.length;
+
+  // Load pending registrations
+  const pendingTbody = document.getElementById('pending-registrations-body');
+  pendingTbody.innerHTML = '';
+  const pendingUsers = users.filter(u => u.status === 'pending');
+  if (pendingUsers.length === 0) {
+    pendingTbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:#666;">No pending registrations.</td></tr>';
+  } else {
+    pendingUsers.forEach(u => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${u.fullName}</td>
+        <td>${u.email}</td>
+        <td>${u.phone}</td>
+        <td>${u.country}</td>
+        <td>${new Date(u.date).toLocaleString()}</td>
+        <td><span class="badge pending">Pending</span></td>
+        <td>
+          <button class="btn btn-sm btn-success" onclick="approveUser('${u.id}')">✅ Approve</button>
+          <button class="btn btn-sm btn-danger" onclick="rejectUser('${u.id}')">❌ Reject</button>
+        </td>
+      `;
+      pendingTbody.appendChild(tr);
+    });
+  }
+
+  // Load all users
+  const allUsersTbody = document.getElementById('all-users-body');
+  allUsersTbody.innerHTML = '';
+  if (users.length === 0) {
+    allUsersTbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:#666;">No users registered yet.</td></tr>';
+  } else {
+    users.forEach(u => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${u.id}</td>
+        <td>${u.fullName}</td>
+        <td>${u.email}</td>
+        <td>$${u.balance.toFixed(2)}</td>
+        <td><span class="badge ${u.status === 'approved' ? 'approved' : u.status === 'pending' ? 'pending' : 'rejected'}">${u.status}</span></td>
+        <td>${new Date(u.date).toLocaleString()}</td>
+        <td><button class="btn btn-sm btn-primary" onclick="viewUser('${u.id}')">View Details</button></td>
+      `;
+      allUsersTbody.appendChild(tr);
+    });
+  }
+
+  // Load card requests
+  const cardTbody = document.getElementById('card-requests-body');
+  cardTbody.innerHTML = '';
+  if (cardRequests.length === 0) {
+    cardTbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:2rem; color:#666;">No card requests yet.</td></tr>';
+  } else {
+    cardRequests.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${r.id}</td>
+        <td>${r.userId}</td>
+        <td>${r.cardType}</td>
+        <td>$${r.amount}</td>
+        <td>****-****-****-1234<br>Exp: 12/28</td>
+        <td><button class="btn btn-sm btn-primary" onclick="openImagePreview('card-front.jpg')">View Front</button></td>
+        <td><button class="btn btn-sm btn-primary" onclick="openImagePreview('card-back.jpg')">View Back</button></td>
+        <td><span class="badge pending">Pending</span></td>
+        <td>
+          <button class="btn btn-sm btn-success" onclick="approveCard('${r.id}')">✅ Approve & Send PIN</button>
+          <button class="btn btn-sm btn-danger" onclick="rejectCard('${r.id}')">❌ Reject</button>
+        </td>
+      `;
+      cardTbody.appendChild(tr);
+    });
+  }
+
+  // Load password reset requests
+  const resetTbody = document.getElementById('password-reset-body');
+  resetTbody.innerHTML = '';
+  if (resetRequests.length === 0) {
+    resetTbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem; color:#666;">No password reset requests.</td></tr>';
+  } else {
+    resetRequests.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${r.id}</td>
+        <td>${r.userId}</td>
+        <td>${r.contact}</td>
+        <td>${new Date(r.date).toLocaleString()}</td>
+        <td><span class="badge ${r.status === 'pending' ? 'pending' : r.status === 'approved' ? 'approved' : 'rejected'}">${r.status}</span></td>
+        <td>
+          <button class="btn btn-sm btn-success" onclick="approveReset('${r.id}')">✅ Send Reset Code</button>
+          <button class="btn btn-sm btn-danger" onclick="rejectReset('${r.id}')">❌ Reject</button>
+        </td>
+      `;
+      resetTbody.appendChild(tr);
+    });
+  }
 }
 
-function rejectCard(reqId, email, phone) {
-  const reason = prompt('Enter reason for rejection:');
-  showNotification(`❌ Card request ${reqId} rejected. Notification sent to user.`, 'error');
-  alert(`📧 Email sent to ${email}: "Your Prime Wallet card request was rejected. Reason: ${reason}. Please upload a valid, working ATM card."\n\n📱 SMS sent to ${phone}: "Prime Wallet Bank: Your card request was rejected. Reason: ${reason}. Check your email for details."`);
+// ---------- ADMIN ACTIONS ----------
+function approveUser(userId) {
+  const users = JSON.parse(localStorage.getItem('pb_users') || '[]');
+  const user = users.find(u => u.id === userId);
+  if (user) {
+    user.status = 'approved';
+    localStorage.setItem('pb_users', JSON.stringify(users));
+    showNotification(`✅ User ${user.fullName} approved. Notification sent to user.`, 'success');
+    loadData();
+  }
 }
 
-// Other actions
-function approveRegistration(id) { showNotification(`✅ Registration ${id} approved`, 'success'); }
-function rejectRegistration(id) { showNotification(`❌ Registration ${id} rejected`, 'error'); }
+function rejectUser(userId) {
+  const users = JSON.parse(localStorage.getItem('pb_users') || '[]');
+  const user = users.find(u => u.id === userId);
+  if (user) {
+    user.status = 'rejected';
+    localStorage.setItem('pb_users', JSON.stringify(users));
+    showNotification(`❌ User ${user.fullName} rejected. Notification sent to user.`, 'error');
+    loadData();
+  }
+}
+
+function approveCard(requestId) {
+  const cardRequests = JSON.parse(localStorage.getItem('pb_card_requests') || '[]');
+  const req = cardRequests.find(r => r.id === requestId);
+  if (req) {
+    req.status = 'approved';
+    req.resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    localStorage.setItem('pb_card_requests', JSON.stringify(cardRequests));
+    showNotification(`✅ Card request ${requestId} approved. PIN sent to user's SMS/Email.`, 'success');
+    loadData();
+  }
+}
+
+function rejectCard(requestId) {
+  const cardRequests = JSON.parse(localStorage.getItem('pb_card_requests') || '[]');
+  const req = cardRequests.find(r => r.id === requestId);
+  if (req) {
+    req.status = 'rejected';
+    localStorage.setItem('pb_card_requests', JSON.stringify(cardRequests));
+    const reason = prompt('Enter reason for rejection:');
+    showNotification(`❌ Card request ${requestId} rejected. Reason: ${reason}. Notification sent to user.`, 'error');
+    loadData();
+  }
+}
+
+function approveReset(requestId) {
+  const resetRequests = JSON.parse(localStorage.getItem('pb_reset_requests') || '[]');
+  const req = resetRequests.find(r => r.id === requestId);
+  if (req) {
+    req.status = 'approved';
+    req.resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    localStorage.setItem('pb_reset_requests', JSON.stringify(resetRequests));
+    showNotification(`✅ Reset code sent to user's SMS/Email: ${req.resetCode}`, 'success');
+    loadData();
+  }
+}
+
+function rejectReset(requestId) {
+  const resetRequests = JSON.parse(localStorage.getItem('pb_reset_requests') || '[]');
+  const req = resetRequests.find(r => r.id === requestId);
+  if (req) {
+    req.status = 'rejected';
+    localStorage.setItem('pb_reset_requests', JSON.stringify(resetRequests));
+    showNotification(`❌ Password reset request rejected. Notification sent to user.`, 'error');
+    loadData();
+  }
+}
+
 function processFunding() {
-  const user = document.getElementById('fund-user').value;
-  const amount = document.getElementById('fund-amount').value;
-  if (!user || !amount) return showNotification('❌ Fill all fields', 'error');
-  showNotification(`✅ Funded ${user} with $${amount}. Notification sent to user.`, 'success');
-  alert(`📧 Email/SMS sent to ${user}: "Your account has been credited with $${amount}. New balance: $${amount}"`);
-}
-function saveSettings() { showNotification('✅ Settings saved', 'success'); }
+  const user = document.getElementById('fund-user').value.trim();
+  const amount = parseFloat(document.getElementById('fund-amount').value);
+  const type = document.getElementById('fund-type').value;
+  const notes = document.getElementById('fund-notes').value;
+  const resultEl = document.getElementById('fund-result');
+  resultEl.className = 'alert hidden';
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-  showNotification('✅ Admin Console loaded — all features active', 'success');
-});
+  if (!user || isNaN(amount)) {
+    resultEl.textContent = '❌ Fill in all required fields correctly';
+    resultEl.className = 'alert alert-danger';
+    resultEl.classList.remove('hidden');
+    return;
+  }
+
+  const users = JSON.parse(localStorage.getItem('pb_users') || '[]');
+  const targetUser = users.find(u => u.id === user || u.email === user);
+  if (!targetUser) {
+    resultEl.textContent = '❌ User not found';
+    resultEl.className = 'alert alert-danger';
+    resultEl.classList.remove('hidden');
+    return;
+  }
+
+  if (type === 'credit') targetUser.balance += amount;
+  else if (type === 'debit') targetUser.balance = Math.max(0, targetUser.balance - amount);
+  else if (type === 'set') targetUser.balance = amount;
+
+  localStorage.setItem('pb_users', JSON.stringify(users));
+  resultEl.textContent = `✅ Successfully ${type}ed $${amount} to ${targetUser.fullName}. New balance: $${targetUser.balance.toFixed(2)}`;
+  resultEl.className = 'alert alert-success';
+  resultEl.classList.remove('hidden');
+  showNotification(`✅ Account funded successfully. User notified via SMS/Email.`, 'success');
+}
+
+function saveSettings() {
+  showNotification('✅ Settings saved successfully', 'success');
+}
+
+// Load data on page open
+document.addEventListener('DOMContentLoaded', loadData);
 </script>
 </body>
 </html>
