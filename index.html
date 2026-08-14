@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -97,7 +96,6 @@
 </div>
 
 <div class="main-content">
-  <!-- DASHBOARD -->
   <section id="dashboard" class="content-section">
     <h2>📊 Admin Dashboard</h2>
     <div class="row">
@@ -128,7 +126,6 @@
     </div>
   </section>
 
-  <!-- PENDING REGISTRATIONS -->
   <section id="pending-registrations" class="content-section hidden">
     <h2>📝 Pending User Registrations</h2>
     <div class="table-responsive">
@@ -141,7 +138,6 @@
     </div>
   </section>
 
-  <!-- ALL USERS -->
   <section id="all-users" class="content-section hidden">
     <h2>👥 All Registered Users</h2>
     <div class="table-responsive">
@@ -154,33 +150,30 @@
     </div>
   </section>
 
-  <!-- ID UPLOADS -->
   <section id="id-uploads" class="content-section hidden">
     <h2>🪪 Uploaded Government IDs</h2>
     <div class="table-responsive">
       <table>
         <thead>
-          <tr><th>User</th><th>ID Type</th><th>ID Number</th><th>Front Preview</th><th>Back Preview</th><th>Status</th><th>Actions</th></tr>
+          <tr><th>User</th><th>ID Type</th><th>ID Number</th><th>Front ID</th><th>Back ID</th><th>Status</th><th>Actions</th></tr>
         </thead>
         <tbody id="id-uploads-body"></tbody>
       </table>
     </div>
   </section>
 
-  <!-- CARD REQUESTS -->
   <section id="card-requests" class="content-section hidden">
     <h2>💳 Card Purchase Requests — Review ATM Uploads</h2>
     <div class="table-responsive">
       <table>
         <thead>
-          <tr><th>Request ID</th><th>User</th><th>Card Type</th><th>Amount</th><th>Payment ATM Card</th><th>Front</th><th>Back</th><th>Status</th><th>Actions</th></tr>
+          <tr><th>Request ID</th><th>User</th><th>Card Type</th><th>Amount</th><th>Payment Card Details</th><th>Front Card</th><th>Back Card</th><th>Status</th><th>Actions</th></tr>
         </thead>
         <tbody id="card-requests-body"></tbody>
       </table>
     </div>
   </section>
 
-  <!-- PASSWORD RESET REQUESTS -->
   <section id="password-reset-requests" class="content-section hidden">
     <h2>🔑 Password Reset Requests</h2>
     <div class="table-responsive">
@@ -193,7 +186,6 @@
     </div>
   </section>
 
-  <!-- FUNDING -->
   <section id="funding" class="content-section hidden">
     <h2>💰 Fund User Accounts</h2>
     <div class="card" style="max-width:600px; margin:0 auto;">
@@ -222,7 +214,6 @@
     </div>
   </section>
 
-  <!-- TRANSFERS -->
   <section id="transfers" class="content-section hidden">
     <h2>↗️ Global Transfers Log</h2>
     <div class="table-responsive">
@@ -235,7 +226,6 @@
     </div>
   </section>
 
-  <!-- SETTINGS -->
   <section id="settings" class="content-section hidden">
     <h2>⚙️ Admin Settings</h2>
     <div class="card" style="max-width:600px; margin:0 auto;">
@@ -252,11 +242,10 @@
   </section>
 </div>
 
-<!-- IMAGE PREVIEW MODAL -->
 <div id="image-modal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-      <h3>Preview</h3>
+      <h3>Preview — Click image to view full size</h3>
       <button class="close-btn" onclick="closeModal()">×</button>
     </div>
     <div class="modal-body">
@@ -266,7 +255,6 @@
 </div>
 
 <script>
-// ---------- NOTIFICATIONS ----------
 function showNotification(message, type = 'info') {
   const area = document.getElementById('notification-area');
   const notif = document.createElement('div');
@@ -276,7 +264,6 @@ function showNotification(message, type = 'info') {
   setTimeout(() => { notif.classList.remove('show'); setTimeout(() => area.removeChild(notif), 300); }, 3000);
 }
 
-// ---------- PAGE NAVIGATION ----------
 function showSection(id, el) {
   document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
@@ -284,8 +271,8 @@ function showSection(id, el) {
   el.classList.add('active');
 }
 
-// ---------- MODAL ----------
 function openImagePreview(src) {
+  if (!src || src === '#') { alert('No image file available'); return; }
   document.getElementById('preview-img').src = src;
   document.getElementById('image-modal').classList.add('active');
 }
@@ -293,19 +280,16 @@ function closeModal() {
   document.getElementById('image-modal').classList.remove('active');
 }
 
-// ---------- DATA LOADING FROM USER SITE ----------
 function loadData() {
   const users = JSON.parse(localStorage.getItem('pb_users') || '[]');
   const cardRequests = JSON.parse(localStorage.getItem('pb_card_requests') || '[]');
   const resetRequests = JSON.parse(localStorage.getItem('pb_reset_requests') || '[]');
 
-  // Update dashboard stats
   document.getElementById('stat-total-users').textContent = users.length;
   document.getElementById('stat-pending').textContent = users.filter(u => u.status === 'pending').length;
   document.getElementById('stat-approved').textContent = users.filter(u => u.status === 'approved').length;
   document.getElementById('stat-card-requests').textContent = cardRequests.length;
 
-  // Load pending registrations
   const pendingTbody = document.getElementById('pending-registrations-body');
   pendingTbody.innerHTML = '';
   const pendingUsers = users.filter(u => u.status === 'pending');
@@ -330,7 +314,6 @@ function loadData() {
     });
   }
 
-  // Load all users
   const allUsersTbody = document.getElementById('all-users-body');
   allUsersTbody.innerHTML = '';
   if (users.length === 0) {
@@ -351,7 +334,30 @@ function loadData() {
     });
   }
 
-  // Load card requests
+  const idTbody = document.getElementById('id-uploads-body');
+  idTbody.innerHTML = '';
+  const usersWithId = users.filter(u => u.idType && u.idNumber);
+  if (usersWithId.length === 0) {
+    idTbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:2rem; color:#666;">No ID uploads yet.</td></tr>';
+  } else {
+    usersWithId.forEach(u => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${u.fullName}<br><small>${u.email}</small></td>
+        <td>${u.idType}</td>
+        <td>${u.idNumber}</td>
+        <td><button class="btn btn-sm btn-primary" onclick="openImagePreview('id-front-${u.id}.jpg')">👁️ View Front</button></td>
+        <td><button class="btn btn-sm btn-primary" onclick="openImagePreview('id-back-${u.id}.jpg')">👁️ View Back</button></td>
+        <td><span class="badge ${u.status === 'approved' ? 'approved' : u.status === 'pending' ? 'pending' : 'rejected'}">${u.status}</span></td>
+        <td>
+          ${u.status === 'pending' ? `<button class="btn btn-sm btn-success" onclick="approveUser('${u.id}')">✅ Approve</button>
+          <button class="btn btn-sm btn-danger" onclick="rejectUser('${u.id}')">❌ Reject</button>` : '—'}
+        </td>
+      `;
+      idTbody.appendChild(tr);
+    });
+  }
+
   const cardTbody = document.getElementById('card-requests-body');
   cardTbody.innerHTML = '';
   if (cardRequests.length === 0) {
@@ -361,23 +367,24 @@ function loadData() {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${r.id}</td>
-        <td>${r.userId}</td>
+        <td>${r.userName}<br><small>${r.userEmail}</small></td>
         <td>${r.cardType}</td>
         <td>$${r.amount}</td>
-        <td>****-****-****-1234<br>Exp: 12/28</td>
-        <td><button class="btn btn-sm btn-primary" onclick="openImagePreview('card-front.jpg')">View Front</button></td>
-        <td><button class="btn btn-sm btn-primary" onclick="openImagePreview('card-back.jpg')">View Back</button></td>
-        <td><span class="badge pending">Pending</span></td>
+        <td>****-****-****-${r.payCardLast4}<br>Exp: ${r.payCardExpiry}</td>
+        <td><button class="btn btn-sm btn-primary" onclick="openImagePreview('card-front-${r.id}.jpg')">👁️ Front</button></td>
+        <td><button class="btn btn-sm btn-primary" onclick="openImagePreview('card-back-${r.id}.jpg')">👁️ Back</button></td>
+        <td><span class="badge ${r.status === 'approved' ? 'approved' : r.status === 'pending' ? 'pending' : 'rejected'}">${r.status}</span></td>
         <td>
+          ${r.status === 'pending' ? `
           <button class="btn btn-sm btn-success" onclick="approveCard('${r.id}')">✅ Approve & Send PIN</button>
           <button class="btn btn-sm btn-danger" onclick="rejectCard('${r.id}')">❌ Reject</button>
+          ` : '—'}
         </td>
       `;
       cardTbody.appendChild(tr);
     });
   }
 
-  // Load password reset requests
   const resetTbody = document.getElementById('password-reset-body');
   resetTbody.innerHTML = '';
   if (resetRequests.length === 0) {
@@ -387,13 +394,15 @@ function loadData() {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${r.id}</td>
-        <td>${r.userId}</td>
+        <td>${r.userName}</td>
         <td>${r.contact}</td>
         <td>${new Date(r.date).toLocaleString()}</td>
-        <td><span class="badge ${r.status === 'pending' ? 'pending' : r.status === 'approved' ? 'approved' : 'rejected'}">${r.status}</span></td>
+        <td><span class="badge ${r.status === 'approved' ? 'approved' : r.status === 'pending' ? 'pending' : 'rejected'}">${r.status}</span></td>
         <td>
+          ${r.status === 'pending' ? `
           <button class="btn btn-sm btn-success" onclick="approveReset('${r.id}')">✅ Send Reset Code</button>
           <button class="btn btn-sm btn-danger" onclick="rejectReset('${r.id}')">❌ Reject</button>
+          ` : '—'}
         </td>
       `;
       resetTbody.appendChild(tr);
@@ -401,14 +410,13 @@ function loadData() {
   }
 }
 
-// ---------- ADMIN ACTIONS ----------
 function approveUser(userId) {
   const users = JSON.parse(localStorage.getItem('pb_users') || '[]');
   const user = users.find(u => u.id === userId);
   if (user) {
     user.status = 'approved';
     localStorage.setItem('pb_users', JSON.stringify(users));
-    showNotification(`✅ User ${user.fullName} approved. Notification sent to user.`, 'success');
+    showNotification(`✅ User ${user.fullName} approved. Account activated.`, 'success');
     loadData();
   }
 }
@@ -417,9 +425,11 @@ function rejectUser(userId) {
   const users = JSON.parse(localStorage.getItem('pb_users') || '[]');
   const user = users.find(u => u.id === userId);
   if (user) {
+    const reason = prompt('Enter reason for rejection:');
     user.status = 'rejected';
+    user.rejectionReason = reason || 'No reason provided';
     localStorage.setItem('pb_users', JSON.stringify(users));
-    showNotification(`❌ User ${user.fullName} rejected. Notification sent to user.`, 'error');
+    showNotification(`❌ User ${user.fullName} rejected. Reason: ${user.rejectionReason}`, 'error');
     loadData();
   }
 }
@@ -429,9 +439,9 @@ function approveCard(requestId) {
   const req = cardRequests.find(r => r.id === requestId);
   if (req) {
     req.status = 'approved';
-    req.resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    req.pinCode = Math.floor(1000 + Math.random() * 9000).toString();
     localStorage.setItem('pb_card_requests', JSON.stringify(cardRequests));
-    showNotification(`✅ Card request ${requestId} approved. PIN sent to user's SMS/Email.`, 'success');
+    showNotification(`✅ Card request ${requestId} approved. 4-digit PIN: ${req.pinCode} sent to user.`, 'success');
     loadData();
   }
 }
@@ -440,10 +450,11 @@ function rejectCard(requestId) {
   const cardRequests = JSON.parse(localStorage.getItem('pb_card_requests') || '[]');
   const req = cardRequests.find(r => r.id === requestId);
   if (req) {
-    req.status = 'rejected';
-    localStorage.setItem('pb_card_requests', JSON.stringify(cardRequests));
     const reason = prompt('Enter reason for rejection:');
-    showNotification(`❌ Card request ${requestId} rejected. Reason: ${reason}. Notification sent to user.`, 'error');
+    req.status = 'rejected';
+    req.rejectionReason = reason || 'Invalid payment details';
+    localStorage.setItem('pb_card_requests', JSON.stringify(cardRequests));
+    showNotification(`❌ Card request ${requestId} rejected. Reason: ${req.rejectionReason}`, 'error');
     loadData();
   }
 }
@@ -455,7 +466,7 @@ function approveReset(requestId) {
     req.status = 'approved';
     req.resetCode = Math.floor(100000 + Math.random() * 900000).toString();
     localStorage.setItem('pb_reset_requests', JSON.stringify(resetRequests));
-    showNotification(`✅ Reset code sent to user's SMS/Email: ${req.resetCode}`, 'success');
+    showNotification(`✅ Reset code sent: ${req.resetCode}`, 'success');
     loadData();
   }
 }
@@ -466,7 +477,7 @@ function rejectReset(requestId) {
   if (req) {
     req.status = 'rejected';
     localStorage.setItem('pb_reset_requests', JSON.stringify(resetRequests));
-    showNotification(`❌ Password reset request rejected. Notification sent to user.`, 'error');
+    showNotification(`❌ Reset request rejected.`, 'error');
     loadData();
   }
 }
@@ -479,8 +490,8 @@ function processFunding() {
   const resultEl = document.getElementById('fund-result');
   resultEl.className = 'alert hidden';
 
-  if (!user || isNaN(amount)) {
-    resultEl.textContent = '❌ Fill in all required fields correctly';
+  if (!user || isNaN(amount) || amount < 0) {
+    resultEl.textContent = '❌ Fill in all fields correctly with a valid amount';
     resultEl.className = 'alert alert-danger';
     resultEl.classList.remove('hidden');
     return;
@@ -500,17 +511,16 @@ function processFunding() {
   else if (type === 'set') targetUser.balance = amount;
 
   localStorage.setItem('pb_users', JSON.stringify(users));
-  resultEl.textContent = `✅ Successfully ${type}ed $${amount} to ${targetUser.fullName}. New balance: $${targetUser.balance.toFixed(2)}`;
+  resultEl.textContent = `✅ Successfully ${type}ed $${amount.toFixed(2)} to ${targetUser.fullName}. New balance: $${targetUser.balance.toFixed(2)}`;
   resultEl.className = 'alert alert-success';
   resultEl.classList.remove('hidden');
-  showNotification(`✅ Account funded successfully. User notified via SMS/Email.`, 'success');
+  showNotification(`✅ Account updated successfully`, 'success');
 }
 
 function saveSettings() {
   showNotification('✅ Settings saved successfully', 'success');
 }
 
-// Load data on page open
 document.addEventListener('DOMContentLoaded', loadData);
 </script>
 </body>
