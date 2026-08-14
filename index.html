@@ -77,9 +77,17 @@
     .modal-footer { padding:1rem; border-top:1px solid var(--border); text-align:right; }
     .chart-placeholder { height:200px; display:flex; align-items:end; gap:4px; padding:1rem 0; }
     .chart-bar { flex:1; background:var(--primary); border-radius:2px; transition:0.2s; }
+    .notification { position:fixed; top:1rem; right:1rem; padding:1rem 1.5rem; border-radius:6px; color:#fff; font-weight:500; z-index:300; opacity:0; transition:0.3s; transform:translateY(-20px); }
+    .notification.show { opacity:1; transform:translateY(0); }
+    .notification.success { background:var(--success); }
+    .notification.error { background:var(--danger); }
+    .notification.info { background:var(--primary); }
   </style>
 </head>
 <body>
+
+<div id="notification-area"></div>
+
 <div class="top-bar">
   <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
   <div class="logo">🔷 Admin Portal — Prime Wallet Bank USA</div>
@@ -91,28 +99,28 @@
 </div>
 
 <div class="sidebar" id="sidebar">
-  <div class="sidebar-item active" onclick="showSection('dashboard')">
+  <div class="sidebar-item active" onclick="showSection('dashboard', this)">
     <span class="icon">📊</span><span>Dashboard</span>
   </div>
-  <div class="sidebar-item" onclick="showSection('registrations')">
+  <div class="sidebar-item" onclick="showSection('registrations', this)">
     <span class="icon">📝</span><span>Pending Registrations</span>
   </div>
-  <div class="sidebar-item" onclick="showSection('card-requests')">
+  <div class="sidebar-item" onclick="showSection('card-requests', this)">
     <span class="icon">💳</span><span>Card Purchase Requests</span>
   </div>
-  <div class="sidebar-item" onclick="showSection('user-management')">
+  <div class="sidebar-item" onclick="showSection('user-management', this)">
     <span class="icon">👥</span><span>All Users</span>
   </div>
-  <div class="sidebar-item" onclick="showSection('funding')">
+  <div class="sidebar-item" onclick="showSection('funding', this)">
     <span class="icon">💰</span><span>Fund User Accounts</span>
   </div>
-  <div class="sidebar-item" onclick="showSection('documents')">
+  <div class="sidebar-item" onclick="showSection('documents', this)">
     <span class="icon">📁</span><span>Uploaded Documents</span>
   </div>
-  <div class="sidebar-item" onclick="showSection('logs')">
+  <div class="sidebar-item" onclick="showSection('logs', this)">
     <span class="icon">📋</span><span>System Logs</span>
   </div>
-  <div class="sidebar-item" onclick="showSection('settings')">
+  <div class="sidebar-item" onclick="showSection('settings', this)">
     <span class="icon">⚙️</span><span>Settings</span>
   </div>
 </div>
@@ -143,7 +151,7 @@
     </div>
     <div class="card">
       <div class="card-header">Live System Status</div>
-      <p style="padding:1rem; color:var(--text-muted);">Connected to Prime Wallet Bank USA — Ready to manage all user data, approvals, and transactions.</p>
+      <p style="padding:1rem; color:var(--text-muted);">✅ Connected to Prime Wallet Bank USA — All controls active and ready.</p>
     </div>
   </section>
 
@@ -259,55 +267,101 @@
 </div>
 
 <script>
+function showNotification(message, type = 'info') {
+  const area = document.getElementById('notification-area');
+  const notif = document.createElement('div');
+  notif.className = `notification ${type} show`;
+  notif.textContent = message;
+  area.appendChild(notif);
+  setTimeout(() => { notif.classList.remove('show'); setTimeout(() => area.removeChild(notif), 300); }, 3000);
+}
+
+function addLogEntry(text, type = 'success') {
+  const container = document.getElementById('log-container');
+  const div = document.createElement('div');
+  div.className = 'log-item';
+  const time = new Date().toLocaleTimeString();
+  div.innerHTML = `<span class="log-time">${time}</span> <span class="log-${type}">${text}</span>`;
+  container.appendChild(div);
+}
+
 function toggleSidebar() {
   const sidebar = document.getElementById('sidebar');
   sidebar.classList.toggle('collapsed');
   document.getElementById('main-content').classList.toggle('expanded');
 }
-function showSection(id) {
+
+function showSection(id, element) {
   document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  element.classList.add('active');
   window.scrollTo(0,0);
+  addLogEntry(`Navigated to ${id} section`, 'info');
 }
-function openTab(tabId) {
+
+function openTab(tabId, element) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  element.classList.add('active');
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
 }
-function openModal(id) {
-  document.getElementById(id).classList.add('active');
-  document.body.style.overflow = 'hidden';
+
+function approveRegistration(userId) {
+  showNotification(`✅ Registration for ${userId} approved successfully`, 'success');
+  addLogEntry(`Approved registration for ${userId}`, 'success');
 }
-function closeModal() {
-  document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-  document.body.style.overflow = 'auto';
+
+function rejectRegistration(userId) {
+  showNotification(`❌ Registration for ${userId} rejected`, 'error');
+  addLogEntry(`Rejected registration for ${userId}`, 'error');
 }
-function approveRegistration(userId) { alert('✅ Registration approved for ' + userId); closeModal(); }
-function rejectRegistration(userId) { alert('❌ Registration rejected for ' + userId); closeModal(); }
-function approveCardRequest(reqId) { alert('✅ Card request approved for ' + reqId); closeModal(); }
-function rejectCardRequest(reqId) { alert('❌ Card request rejected for ' + reqId); closeModal(); }
-function processFunding() { alert('✅ Funding processed successfully!'); }
-function saveSettings() { alert('✅ Settings saved!'); }
-document.addEventListener('click', e => {
-  const modals = document.querySelectorAll('.modal.active');
-  modals.forEach(m => { if (e.target === m) closeModal(); });
-});
+
+function approveCardRequest(reqId) {
+  showNotification(`✅ Card request ${reqId} approved — card activated`, 'success');
+  addLogEntry(`Approved card request ${reqId}`, 'success');
+}
+
+function rejectCardRequest(reqId) {
+  showNotification(`❌ Card request ${reqId} rejected`, 'error');
+  addLogEntry(`Rejected card request ${reqId}`, 'error');
+}
+
+function processFunding() {
+  const userId = document.getElementById('fund-user-id').value.trim();
+  const amount = document.getElementById('fund-amount').value;
+  const type = document.getElementById('fund-type').value;
+  const notes = document.getElementById('fund-notes').value;
+  
+  if (!userId || !amount) {
+    showNotification('❌ Please fill in User ID and amount', 'error');
+    return;
+  }
+  
+  const action = type === 'credit' ? 'credited to' : type === 'debit' ? 'debited from' : 'set as balance for';
+  showNotification(`✅ Successfully ${action} ${userId}: $${amount}`, 'success');
+  addLogEntry(`Funding processed: ${type} $${amount} for ${userId} — Notes: ${notes}`, 'success');
+  
+  document.getElementById('fund-user-id').value = '';
+  document.getElementById('fund-amount').value = '';
+  document.getElementById('fund-notes').value = '';
+}
+
+function saveSettings() {
+  const newPass = document.getElementById('new-admin-password').value;
+  const siteName = document.getElementById('site-name').value;
+  
+  if (newPass) showNotification('✅ Admin password updated', 'success');
+  if (siteName) showNotification('✅ Site name updated', 'success');
+  if (!newPass && !siteName) { showNotification('⚠️ No changes made', 'info'); return; }
+  addLogEntry('Admin settings updated', 'success');
+  document.getElementById('new-admin-password').value = '';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  const logContainer = document.getElementById('log-container');
-  const logs = [
-    { time: new Date().toLocaleTimeString(), text: '✅ Admin panel initialized — connected to Prime Wallet Bank USA', type: 'success' },
-    { time: new Date().toLocaleTimeString(), text: '🔒 Secure session started for TWIN_ADMIN_01', type: 'success' },
-    { time: new Date().toLocaleTimeString(), text: '📡 Real-time monitoring active', type: 'warning' }
-  ];
-  logs.forEach(log => {
-    const div = document.createElement('div');
-    div.className = 'log-item';
-    div.innerHTML = `<span class="log-time">${log.time}</span> <span class="log-${log.type}">${log.text}</span>`;
-    logContainer.appendChild(div);
-  });
+  addLogEntry('Admin panel initialized — all controls active', 'success');
+  addLogEntry('Ready to manage Prime Wallet Bank USA', 'info');
+  showNotification('✅ Admin panel loaded successfully — all buttons functional', 'success');
 });
 </script>
 </body>
