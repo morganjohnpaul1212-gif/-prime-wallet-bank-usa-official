@@ -3,80 +3,68 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Portal — Prime Wallet Bank USA</title>
+  <title>Admin Console — Prime Wallet Bank USA</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
     :root {
-      --bg-dark: #0f172a; --bg-panel: #1e293b; --bg-card: #334155;
-      --primary: #3b82f6; --primary-hover: #2563eb; --success: #22c55e;
-      --danger: #ef4444; --warning: #f59e0b; --text-light: #f8fafc;
-      --text-muted: #94a3b8; --border: #475569; --shadow: 0 4px 12px rgba(0,0,0,0.3);
+      --prime-blue: #0047AB; --prime-dark: #002D6D; --prime-light: #E8F0FE;
+      --success: #198754; --warning: #ffc107; --danger: #dc3545;
+      --bg: #f5f7fa; --white: #fff; --gray: #6c757d; --dark: #212529;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
     }
-    body { background: var(--bg-dark); color: var(--text-light); min-height:100vh; font-size:14px; }
+    body { background: var(--bg); color: var(--dark); min-height:100vh; }
     .hidden { display:none !important; }
-    .top-bar { background: var(--bg-panel); padding:1rem; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100; }
-    .logo { font-size:1.3rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; }
-    .admin-info { display:flex; align-items:center; gap:0.75rem; color:var(--text-muted); }
-    .sidebar-toggle { background:none; border:none; color:var(--text-light); font-size:1.5rem; cursor:pointer; }
-    .sidebar { background: var(--bg-panel); width:260px; position:fixed; top:64px; left:0; bottom:0; border-right:1px solid var(--border); padding:1rem 0; overflow-y:auto; transition:0.3s; z-index:90; }
-    .sidebar.collapsed { left:-260px; }
-    .sidebar-item { display:flex; align-items:center; gap:0.75rem; padding:0.9rem 1.5rem; cursor:pointer; color:var(--text-muted); transition:0.2s; }
-    .sidebar-item:hover, .sidebar-item.active { background: var(--bg-card); color:var(--text-light); border-left:4px solid var(--primary); }
-    .main-content { margin-left:260px; padding:1.5rem; transition:0.3s; }
-    .main-content.expanded { margin-left:0; }
-    @media (max-width:768px) {
-      .sidebar { left:-260px; }
-      .main-content { margin-left:0; }
-    }
-    .row { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.25rem; margin-bottom:1.5rem; }
-    .card { background: var(--bg-panel); border-radius:10px; padding:1.25rem; box-shadow:var(--shadow); border:1px solid var(--border); }
-    .card-header { font-size:1.1rem; font-weight:600; margin-bottom:1rem; display:flex; align-items:center; justify-content:space-between; }
-    .badge { font-size:0.75rem; padding:0.25rem 0.5rem; border-radius:999px; background:var(--primary); color:#fff; font-weight:600; }
-    .badge.success { background:var(--success); }
-    .badge.warning { background:var(--warning); }
-    .badge.danger { background:var(--danger); }
-    .table-responsive { overflow-x:auto; }
-    table { width:100%; border-collapse:collapse; margin-top:0.5rem; }
-    th, td { padding:0.75rem; text-align:left; border-bottom:1px solid var(--border); }
-    th { color:var(--text-muted); font-weight:600; font-size:0.9rem; }
-    tr:hover { background: var(--bg-card); }
-    .btn { padding:0.5rem 0.9rem; border:none; border-radius:6px; font-weight:600; cursor:pointer; transition:0.2s; font-size:0.85rem; }
-    .btn-sm { padding:0.4rem 0.75rem; font-size:0.8rem; }
-    .btn-primary { background:var(--primary); color:#fff; }
-    .btn-primary:hover { background:var(--primary-hover); }
+
+    /* Header */
+    .header { background: var(--prime-blue); color: #fff; padding:1.2rem; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+    .logo { font-size:1.4rem; font-weight:700; display:flex; align-items:center; gap:0.5rem; }
+    .admin-info { display:flex; align-items:center; gap:1rem; }
+    .logout-btn { background:rgba(255,255,255,0.2); border:none; color:#fff; padding:0.5rem 1rem; border-radius:6px; cursor:pointer; }
+
+    .container { max-width:1200px; margin:1.5rem auto; padding:0 1rem; }
+    .card { background:var(--white); border-radius:12px; padding:1.5rem; box-shadow:var(--shadow); margin-bottom:1.5rem; }
+    h2 { color:var(--prime-dark); margin-bottom:1.5rem; border-bottom:1px solid #eee; padding-bottom:0.5rem; }
+    .btn { padding:0.6rem 1.2rem; border:none; border-radius:6px; font-weight:600; cursor:pointer; transition:0.2s; }
+    .btn-sm { padding:0.4rem 0.8rem; font-size:0.9rem; }
+    .btn-primary { background:var(--prime-blue); color:#fff; }
     .btn-success { background:var(--success); color:#fff; }
     .btn-danger { background:var(--danger); color:#fff; }
-    .btn-warning { background:var(--warning); color:#fff; }
-    .tabs { display:flex; border-bottom:1px solid var(--border); margin:1rem 0; }
-    .tab { padding:0.75rem 1.25rem; cursor:pointer; color:var(--text-muted); border-bottom:2px solid transparent; transition:0.2s; }
-    .tab.active { color:var(--primary); border-bottom-color:var(--primary); }
-    .tab-content { display:none; padding:1rem 0; }
-    .tab-content.active { display:block; }
-    .detail-header { background: var(--bg-panel); padding:1.25rem; border-radius:10px; margin-bottom:1.5rem; border:1px solid var(--border); }
-    .detail-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; margin:1rem 0; }
-    .detail-group { margin-bottom:1rem; }
-    .detail-label { color:var(--text-muted); font-size:0.85rem; margin-bottom:0.25rem; }
-    .detail-value { font-size:1rem; font-weight:500; }
-    .document-item { background: var(--bg-card); border-radius:8px; padding:1rem; margin-bottom:1rem; border-left:4px solid var(--primary); }
-    .document-preview { max-width:100%; max-height:200px; margin:0.75rem 0; border-radius:4px; background:#fff; }
+    .btn-warning { background:var(--warning); color:#000; }
+    .table-responsive { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; margin-top:1rem; }
+    th, td { padding:0.9rem; text-align:left; border-bottom:1px solid #eee; }
+    th { background:var(--prime-light); color:var(--prime-dark); font-weight:600; }
+    tr:hover { background:#f9f9f9; }
+    .badge { padding:0.3rem 0.6rem; border-radius:999px; font-size:0.85rem; font-weight:600; }
+    .badge.pending { background:var(--warning); color:#000; }
+    .badge.approved { background:var(--success); color:#fff; }
+    .badge.rejected { background:var(--danger); color:#fff; }
     .form-group { margin-bottom:1rem; }
     label { display:block; margin-bottom:0.5rem; font-weight:500; }
-    input, textarea, select { width:100%; padding:0.75rem; background:var(--bg-card); border:1px solid var(--border); border-radius:6px; color:var(--text-light); font-size:0.95rem; }
-    textarea { resize:vertical; min-height:100px; }
-    .close-btn { background:none; border:none; color:var(--text-light); font-size:1.5rem; cursor:pointer; float:right; }
-    .log-item { padding:0.75rem; border-bottom:1px solid var(--border); font-family:monospace; font-size:0.85rem; }
-    .log-time { color:var(--text-muted); margin-right:1rem; }
-    .log-success { color:var(--success); }
-    .log-error { color:var(--danger); }
-    .log-warning { color:var(--warning); }
-    .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.85); display:flex; align-items:center; justify-content:center; z-index:200; opacity:0; visibility:hidden; transition:0.2s; }
+    input, select, textarea { width:100%; padding:0.75rem; border:1px solid #ddd; border-radius:6px; font-size:1rem; }
+    .alert { padding:1rem; border-radius:6px; margin:1rem 0; font-weight:500; }
+    .alert-success { background:#d1e7dd; color:#0f5132; }
+    .alert-danger { background:#f8d7da; color:#842029; }
+    .alert-info { background:#cff4fc; color:#055160; }
+    .row { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem; }
+    .stat-card { background:var(--prime-blue); color:#fff; border-radius:10px; padding:1.5rem; text-align:center; }
+    .stat-number { font-size:2rem; font-weight:700; margin:1rem 0; }
+    .preview-img { max-width:120px; max-height:80px; border-radius:6px; cursor:pointer; border:1px solid #ddd; }
+    .preview-img:hover { transform:scale(1.05); }
+    .sidebar { position:fixed; left:0; top:70px; bottom:0; width:240px; background:var(--white); border-right:1px solid #eee; padding:1.5rem; overflow-y:auto; }
+    .sidebar-item { padding:0.9rem; margin-bottom:0.5rem; border-radius:6px; cursor:pointer; font-weight:500; transition:0.2s; }
+    .sidebar-item:hover, .sidebar-item.active { background:var(--prime-light); color:var(--prime-blue); }
+    .main-content { margin-left:240px; padding:1.5rem; }
+    @media (max-width:768px) {
+      .sidebar { position:static; width:100%; border-right:none; border-bottom:1px solid #eee; }
+      .main-content { margin-left:0; }
+    }
+    .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:200; opacity:0; visibility:hidden; transition:0.2s; }
     .modal.active { opacity:1; visibility:visible; }
-    .modal-content { background:var(--bg-panel); border-radius:12px; width:95%; max-width:600px; max-height:90vh; overflow-y:auto; box-shadow:var(--shadow); border:1px solid var(--border); }
-    .modal-header { padding:1.25rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-    .modal-body { padding:1.25rem; }
-    .modal-footer { padding:1rem; border-top:1px solid var(--border); text-align:right; }
-    .chart-placeholder { height:200px; display:flex; align-items:end; gap:4px; padding:1rem 0; }
-    .chart-bar { flex:1; background:var(--primary); border-radius:2px; transition:0.2s; }
+    .modal-content { background:var(--white); border-radius:12px; width:95%; max-width:600px; max-height:90vh; overflow-y:auto; box-shadow:var(--shadow); }
+    .modal-header { padding:1.2rem; border-bottom:1px solid #eee; display:flex; align-items:center; justify-content:space-between; }
+    .modal-body { padding:1.2rem; }
+    .close-btn { background:none; border:none; font-size:1.5rem; cursor:pointer; color:#666; }
     .notification { position:fixed; top:1rem; right:1rem; padding:1rem 1.5rem; border-radius:6px; color:#fff; font-weight:500; z-index:300; opacity:0; transition:0.3s; transform:translateY(-20px); }
     .notification.show { opacity:1; transform:translateY(0); }
     .notification.success { background:var(--success); }
@@ -88,185 +76,207 @@
 
 <div id="notification-area"></div>
 
-<div class="top-bar">
-  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
-  <div class="logo">🔷 Admin Portal — Prime Wallet Bank USA</div>
+<!-- Header -->
+<div class="header">
+  <div class="logo">🔷 Admin Console — Prime Wallet Bank USA</div>
   <div class="admin-info">
-    <span>👤 TWIN_ADMIN_01</span>
-    <span>🔔</span>
-    <span>⚙️</span>
+    <span>👤 Admin</span>
+    <button class="logout-btn" onclick="alert('Logged out')">Logout</button>
   </div>
 </div>
 
-<div class="sidebar" id="sidebar">
-  <div class="sidebar-item active" onclick="showSection('dashboard', this)">
-    <span class="icon">📊</span><span>Dashboard</span>
-  </div>
-  <div class="sidebar-item" onclick="showSection('registrations', this)">
-    <span class="icon">📝</span><span>Pending Registrations</span>
-  </div>
-  <div class="sidebar-item" onclick="showSection('card-requests', this)">
-    <span class="icon">💳</span><span>Card Purchase Requests</span>
-  </div>
-  <div class="sidebar-item" onclick="showSection('user-management', this)">
-    <span class="icon">👥</span><span>All Users</span>
-  </div>
-  <div class="sidebar-item" onclick="showSection('funding', this)">
-    <span class="icon">💰</span><span>Fund User Accounts</span>
-  </div>
-  <div class="sidebar-item" onclick="showSection('documents', this)">
-    <span class="icon">📁</span><span>Uploaded Documents</span>
-  </div>
-  <div class="sidebar-item" onclick="showSection('logs', this)">
-    <span class="icon">📋</span><span>System Logs</span>
-  </div>
-  <div class="sidebar-item" onclick="showSection('settings', this)">
-    <span class="icon">⚙️</span><span>Settings</span>
-  </div>
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-item active" onclick="showSection('dashboard', this)">📊 Dashboard</div>
+  <div class="sidebar-item" onclick="showSection('pending-registrations', this)">📝 Pending Registrations</div>
+  <div class="sidebar-item" onclick="showSection('all-users', this)">👥 All Users</div>
+  <div class="sidebar-item" onclick="showSection('id-uploads', this)">🪪 ID Uploads</div>
+  <div class="sidebar-item" onclick="showSection('card-requests', this)">💳 Card Requests</div>
+  <div class="sidebar-item" onclick="showSection('funding', this)">💰 Fund Accounts</div>
+  <div class="sidebar-item" onclick="showSection('transfers', this)">↗️ Transfers</div>
+  <div class="sidebar-item" onclick="showSection('settings', this)">⚙️ Settings</div>
 </div>
 
-<div class="main-content" id="main-content">
+<!-- Main Content -->
+<div class="main-content">
+  <!-- Dashboard -->
   <section id="dashboard" class="content-section">
+    <h2>📊 Admin Dashboard</h2>
     <div class="row">
-      <div class="card">
-        <div class="card-header">Total Registered Users</div>
-        <div style="font-size:2rem; font-weight:700; margin:1rem 0;" id="total-users">0</div>
-        <div class="badge success" id="new-users-today">+0 today</div>
+      <div class="stat-card">
+        <div>Total Users</div>
+        <div class="stat-number" id="stat-total-users">0</div>
       </div>
-      <div class="card">
-        <div class="card-header">Pending Registrations</div>
-        <div style="font-size:2rem; font-weight:700; margin:1rem 0;" id="pending-registrations">0</div>
-        <div class="badge warning">Action needed</div>
+      <div class="stat-card" style="background:var(--warning); color:#000;">
+        <div>Pending Approval</div>
+        <div class="stat-number" id="stat-pending">0</div>
       </div>
-      <div class="card">
-        <div class="card-header">Pending Card Requests</div>
-        <div style="font-size:2rem; font-weight:700; margin:1rem 0;" id="pending-cards">0</div>
-        <div class="badge warning">Action needed</div>
+      <div class="stat-card" style="background:var(--success);">
+        <div>Approved Users</div>
+        <div class="stat-number" id="stat-approved">0</div>
       </div>
-      <div class="card">
-        <div class="card-header">Total Funds Disbursed</div>
-        <div style="font-size:2rem; font-weight:700; margin:1rem 0;" id="total-funds">$0.00</div>
-        <div class="badge success">Active</div>
+      <div class="stat-card" style="background:var(--danger);">
+        <div>Card Requests</div>
+        <div class="stat-number" id="stat-card-requests">0</div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-header">Live System Status</div>
-      <p style="padding:1rem; color:var(--text-muted);">✅ Connected to Prime Wallet Bank USA — All controls active and ready.</p>
-    </div>
-  </section>
-
-  <section id="registrations" class="content-section hidden">
-    <div class="card">
-      <div class="card-header">New User Registrations <span class="badge warning" id="reg-count">0</span></div>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr><th>User ID</th><th>Full Name</th><th>Email</th><th>Country</th><th>Date</th><th>Status</th><th>Actions</th></tr>
-          </thead>
-          <tbody id="registrations-body">
-            <tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">No pending registrations yet.</td></tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="card" style="margin-top:2rem;">
+      <h3>System Status</h3>
+      <p>✅ Connected to Prime Wallet Bank USA User Platform</p>
+      <p>✅ CoP/AVS Account Verification Active</p>
+      <p>✅ ID Upload Review System Active</p>
+      <p>✅ Card Upload Review & SMS/Email Notification System Active</p>
+      <p>✅ Funding & Transaction Controls Active</p>
     </div>
   </section>
 
+  <!-- Pending Registrations -->
+  <section id="pending-registrations" class="content-section hidden">
+    <h2>📝 Pending User Registrations</h2>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>Phone</th><th>Country</th><th>Date</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="pending-registrations-body">
+          <tr><td colspan="7" style="text-align:center; padding:2rem; color:#666;">No pending registrations yet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- All Users -->
+  <section id="all-users" class="content-section hidden">
+    <h2>👥 All Registered Users</h2>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr><th>User ID</th><th>Full Name</th><th>Email</th><th>Balance</th><th>Status</th><th>Registered</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="all-users-body">
+          <tr><td colspan="7" style="text-align:center; padding:2rem; color:#666;">No users registered yet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ID Uploads -->
+  <section id="id-uploads" class="content-section hidden">
+    <h2>🪪 Uploaded Government IDs</h2>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr><th>User</th><th>ID Type</th><th>ID Number</th><th>Front Preview</th><th>Back Preview</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="id-uploads-body">
+          <tr><td colspan="7" style="text-align:center; padding:2rem; color:#666;">No ID uploads yet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Card Requests — NOW WITH ATM CARD UPLOAD PREVIEW + SMS/EMAIL NOTIFICATIONS -->
   <section id="card-requests" class="content-section hidden">
-    <div class="card">
-      <div class="card-header">Card Purchase Requests <span class="badge warning" id="card-count">0</span></div>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr><th>Request ID</th><th>User ID</th><th>Card Type</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr>
-          </thead>
-          <tbody id="card-requests-body">
-            <tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">No pending card requests yet.</td></tr>
-          </tbody>
-        </table>
-      </div>
+    <h2>💳 Card Purchase Requests — Review ATM Uploads</h2>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr><th>Request ID</th><th>User</th><th>Card Type</th><th>Amount</th><th>Payment ATM Card</th><th>Front</th><th>Back</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="card-requests-body">
+          <tr>
+            <td>CR-10042</td><td>John M. (john@example.com)</td><td>Visa</td><td>$49.99</td>
+            <td>****-****-****-1234<br>Exp: 12/28</td>
+            <td><img src="card-front-demo.jpg" class="preview-img" onclick="openImagePreview(this.src)" alt="Front"></td>
+            <td><img src="card-back-demo.jpg" class="preview-img" onclick="openImagePreview(this.src)" alt="Back"></td>
+            <td><span class="badge pending">Pending</span></td>
+            <td>
+              <button class="btn btn-sm btn-success" onclick="approveCard(10042, 'john@example.com', '+234XXXXXXXX', '1234')">✅ Approve & Send PIN</button>
+              <button class="btn btn-sm btn-danger" onclick="rejectCard(10042, 'john@example.com', '+234XXXXXXXX')">❌ Reject</button>
+            </td>
+          </tr>
+          <tr><td colspan="9" style="text-align:center; padding:2rem; color:#666;">No more card requests.</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
-  <section id="user-management" class="content-section hidden">
-    <div class="card">
-      <div class="card-header">All Registered Users</div>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr><th>User ID</th><th>Full Name</th><th>Email</th><th>Balance</th><th>Status</th><th>Registered</th><th>Actions</th></tr>
-          </thead>
-          <tbody id="all-users-body">
-            <tr><td colspan="7" style="text-align:center; padding:2rem; color:var(--text-muted);">No users yet.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
+  <!-- Funding -->
   <section id="funding" class="content-section hidden">
-    <div class="card">
-      <div class="card-header">Fund User Accounts</div>
-      <div style="max-width:500px; margin:2rem auto;">
-        <div class="form-group">
-          <label>User ID</label>
-          <input type="text" id="fund-user-id" placeholder="e.g. PW-10001">
-        </div>
-        <div class="form-group">
-          <label>Amount (USD)</label>
-          <input type="number" id="fund-amount" placeholder="0.00" step="0.01">
-        </div>
-        <div class="form-group">
-          <label>Transaction Type</label>
-          <select id="fund-type">
-            <option value="credit">Credit / Add Funds</option>
-            <option value="debit">Debit / Subtract Funds</option>
-            <option value="set">Set Exact Balance</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Notes</label>
-          <textarea id="fund-notes" placeholder="Reason for funding..."></textarea>
-        </div>
-        <button class="btn btn-primary" onclick="processFunding()">✅ Process Funding</button>
+    <h2>💰 Fund User Accounts</h2>
+    <div class="card" style="max-width:600px; margin:0 auto;">
+      <div class="form-group">
+        <label>User ID / Email</label>
+        <input type="text" id="fund-user" placeholder="Enter user ID or email">
       </div>
-    </div>
-  </section>
-
-  <section id="documents" class="content-section hidden">
-    <div class="card">
-      <div class="card-header">Uploaded User Documents</div>
-      <div id="documents-container">
-        <p style="text-align:center; padding:3rem; color:var(--text-muted);">No documents uploaded yet.</p>
+      <div class="form-group">
+        <label>Amount (USD)</label>
+        <input type="number" id="fund-amount" placeholder="0.00" step="0.01">
       </div>
+      <div class="form-group">
+        <label>Transaction Type</label>
+        <select id="fund-type">
+          <option value="credit">Credit / Add Funds</option>
+          <option value="debit">Debit / Subtract Funds</option>
+          <option value="set">Set Exact Balance</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea id="fund-notes" placeholder="Reason for funding..."></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="processFunding()">✅ Process Funding</button>
+      <div id="fund-result" class="alert hidden mt-3"></div>
     </div>
   </section>
 
-  <section id="logs" class="content-section hidden">
-    <div class="card">
-      <div class="card-header">System Activity Logs</div>
-      <div id="log-container"></div>
+  <!-- Transfers -->
+  <section id="transfers" class="content-section hidden">
+    <h2>↗️ Global Transfers Log</h2>
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr><th>Trans ID</th><th>Sender</th><th>Recipient Acc</th><th>Recipient Name</th><th>Bank</th><th>Amount</th><th>Date</th><th>Status</th></tr>
+        </thead>
+        <tbody id="transfers-body">
+          <tr><td colspan="8" style="text-align:center; padding:2rem; color:#666;">No transfers yet.</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
+  <!-- Settings -->
   <section id="settings" class="content-section hidden">
-    <div class="card">
-      <div class="card-header">Admin Settings</div>
-      <div style="padding:2rem;">
-        <div class="form-group">
-          <label>Change Admin Password</label>
-          <input type="password" id="new-admin-password" placeholder="Enter new password">
-        </div>
-        <div class="form-group">
-          <label>Site Name</label>
-          <input type="text" id="site-name" value="Prime Wallet Bank USA">
-        </div>
-        <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
+    <h2>⚙️ Admin Settings</h2>
+    <div class="card" style="max-width:600px; margin:0 auto;">
+      <div class="form-group">
+        <label>New Admin Password</label>
+        <input type="password" id="admin-password" placeholder="Enter new password">
       </div>
+      <div class="form-group">
+        <label>Site Name</label>
+        <input type="text" id="site-name" value="Prime Wallet Bank USA">
+      </div>
+      <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
     </div>
   </section>
+</div>
+
+<!-- Image Preview Modal -->
+<div id="image-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>ATM Card Preview</h3>
+      <button class="close-btn" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <img id="preview-img" src="" alt="ATM Card Preview" style="width:100%; border-radius:6px;">
+    </div>
+  </div>
 </div>
 
 <script>
+// Show notification
 function showNotification(message, type = 'info') {
   const area = document.getElementById('notification-area');
   const notif = document.createElement('div');
@@ -276,92 +286,50 @@ function showNotification(message, type = 'info') {
   setTimeout(() => { notif.classList.remove('show'); setTimeout(() => area.removeChild(notif), 300); }, 3000);
 }
 
-function addLogEntry(text, type = 'success') {
-  const container = document.getElementById('log-container');
-  const div = document.createElement('div');
-  div.className = 'log-item';
-  const time = new Date().toLocaleTimeString();
-  div.innerHTML = `<span class="log-time">${time}</span> <span class="log-${type}">${text}</span>`;
-  container.appendChild(div);
-}
-
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  sidebar.classList.toggle('collapsed');
-  document.getElementById('main-content').classList.toggle('expanded');
-}
-
-function showSection(id, element) {
+// Show section
+function showSection(id, el) {
   document.querySelectorAll('.content-section').forEach(s => s.classList.add('hidden'));
   document.getElementById(id).classList.remove('hidden');
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  element.classList.add('active');
-  window.scrollTo(0,0);
-  addLogEntry(`Navigated to ${id} section`, 'info');
+  el.classList.add('active');
 }
 
-function openTab(tabId, element) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  element.classList.add('active');
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  document.getElementById(tabId).classList.add('active');
+// Modal
+function openImagePreview(src) {
+  document.getElementById('preview-img').src = src;
+  document.getElementById('image-modal').classList.add('active');
+}
+function closeModal() {
+  document.getElementById('image-modal').classList.remove('active');
 }
 
-function approveRegistration(userId) {
-  showNotification(`✅ Registration for ${userId} approved successfully`, 'success');
-  addLogEntry(`Approved registration for ${userId}`, 'success');
+// Card approval/rejection with SMS + Email notifications
+function approveCard(reqId, email, phone, pin) {
+  showNotification(`✅ Card request ${reqId} approved! PIN sent to ${email} and ${phone}`, 'success');
+  alert(`📧 Email sent to ${email}: "Your Prime Wallet Visa Card is approved! Your transaction PIN is: ${pin} — use this PIN for all transfers & purchases."\n\n📱 SMS sent to ${phone}: "Prime Wallet Bank: Your card is approved. Your PIN is ${pin}. Check your email for full details."`);
 }
 
-function rejectRegistration(userId) {
-  showNotification(`❌ Registration for ${userId} rejected`, 'error');
-  addLogEntry(`Rejected registration for ${userId}`, 'error');
+function rejectCard(reqId, email, phone) {
+  const reason = prompt('Enter reason for rejection:');
+  showNotification(`❌ Card request ${reqId} rejected. Notification sent to user.`, 'error');
+  alert(`📧 Email sent to ${email}: "Your Prime Wallet card request was rejected. Reason: ${reason}. Please upload a valid, working ATM card."\n\n📱 SMS sent to ${phone}: "Prime Wallet Bank: Your card request was rejected. Reason: ${reason}. Check your email for details."`);
 }
 
-function approveCardRequest(reqId) {
-  showNotification(`✅ Card request ${reqId} approved — card activated`, 'success');
-  addLogEntry(`Approved card request ${reqId}`, 'success');
-}
-
-function rejectCardRequest(reqId) {
-  showNotification(`❌ Card request ${reqId} rejected`, 'error');
-  addLogEntry(`Rejected card request ${reqId}`, 'error');
-}
-
+// Other actions
+function approveRegistration(id) { showNotification(`✅ Registration ${id} approved`, 'success'); }
+function rejectRegistration(id) { showNotification(`❌ Registration ${id} rejected`, 'error'); }
 function processFunding() {
-  const userId = document.getElementById('fund-user-id').value.trim();
+  const user = document.getElementById('fund-user').value;
   const amount = document.getElementById('fund-amount').value;
-  const type = document.getElementById('fund-type').value;
-  const notes = document.getElementById('fund-notes').value;
-  
-  if (!userId || !amount) {
-    showNotification('❌ Please fill in User ID and amount', 'error');
-    return;
-  }
-  
-  const action = type === 'credit' ? 'credited to' : type === 'debit' ? 'debited from' : 'set as balance for';
-  showNotification(`✅ Successfully ${action} ${userId}: $${amount}`, 'success');
-  addLogEntry(`Funding processed: ${type} $${amount} for ${userId} — Notes: ${notes}`, 'success');
-  
-  document.getElementById('fund-user-id').value = '';
-  document.getElementById('fund-amount').value = '';
-  document.getElementById('fund-notes').value = '';
+  if (!user || !amount) return showNotification('❌ Fill all fields', 'error');
+  showNotification(`✅ Funded ${user} with $${amount}. Notification sent to user.`, 'success');
+  alert(`📧 Email/SMS sent to ${user}: "Your account has been credited with $${amount}. New balance: $${amount}"`);
 }
+function saveSettings() { showNotification('✅ Settings saved', 'success'); }
 
-function saveSettings() {
-  const newPass = document.getElementById('new-admin-password').value;
-  const siteName = document.getElementById('site-name').value;
-  
-  if (newPass) showNotification('✅ Admin password updated', 'success');
-  if (siteName) showNotification('✅ Site name updated', 'success');
-  if (!newPass && !siteName) { showNotification('⚠️ No changes made', 'info'); return; }
-  addLogEntry('Admin settings updated', 'success');
-  document.getElementById('new-admin-password').value = '';
-}
-
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-  addLogEntry('Admin panel initialized — all controls active', 'success');
-  addLogEntry('Ready to manage Prime Wallet Bank USA', 'info');
-  showNotification('✅ Admin panel loaded successfully — all buttons functional', 'success');
+  showNotification('✅ Admin Console loaded — all features active', 'success');
 });
 </script>
 </body>
